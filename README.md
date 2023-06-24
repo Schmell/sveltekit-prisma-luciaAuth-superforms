@@ -2,17 +2,9 @@
 
 Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
 
-## Creating a project
+## Deploying the project
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/sRATcT?referralCode=vMAgAq)
 
 ## Developing
 
