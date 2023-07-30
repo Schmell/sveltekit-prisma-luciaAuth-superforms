@@ -10,12 +10,14 @@ export const actions: Actions = {
 			await request.formData()
 		) as Record<string, string>;
 		// basic check
-		if (typeof username !== 'string' || username.length < 4 || username.length > 31) {
+		if (typeof username !== 'string' || username.length < 2 || username.length > 31) {
+			// console.log('Invalid username', 'Invalid username');
 			return fail(400, {
 				message: 'Invalid username'
 			});
 		}
 		if (typeof password !== 'string' || password.length < 6 || password.length > 255) {
+			console.log('Invalid password: ');
 			return fail(400, {
 				message: 'Invalid password'
 			});
@@ -28,6 +30,7 @@ export const actions: Actions = {
 					password // hashed by Lucia
 				},
 				attributes: {
+					github_username: '',
 					username,
 					email,
 					name,
