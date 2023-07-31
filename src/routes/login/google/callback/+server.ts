@@ -1,8 +1,8 @@
 import { auth, googleAuth } from '$lib/server/lucia.js';
 import { OAuthRequestError } from '@lucia-auth/oauth';
-// http://localhost:5173/login/github/callback?code=897192588be93cec42d5&state=5xnqatfsoztizmqs4x9gwml4x4bcvbsmz184tt2klhz
+
 export const GET = async ({ url, cookies, locals }) => {
-	const storedState = cookies.get('github_oauth_state');
+	const storedState = cookies.get('google_oauth_state');
 	const state = url.searchParams.get('state');
 	const code = url.searchParams.get('code');
 
@@ -15,6 +15,7 @@ export const GET = async ({ url, cookies, locals }) => {
 
 	try {
 		const { existingUser, googleUser, createUser } = await googleAuth.validateCallback(code);
+
 		console.log('googleUser: ', googleUser);
 
 		const getUser = async () => {

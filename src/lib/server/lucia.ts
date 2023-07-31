@@ -47,11 +47,10 @@ export const googleAuth = google(auth, {
 	clientId: GOOGLE_CLIENT_ID,
 	clientSecret: GOOGLE_CLIENT_SECRET,
 	redirectUri: GOOGLE_CLIENT_REDIRECTURI,
-	scope: ['https://www.googleapis.com/auth/userinfo.profile']
-	// https://schmelte.up.railway.app/login/google/callback
-	// ?state=xbh0wb5auubwejrb4jl1a2t4h277nx5289devy01f8h
-	// &code=4%2F0AZEOvhVP1lUP96QTS8dZEBSTWPsSinczAjWDYmxShl4UnsFUjxBJGdtDneqisw-8L5QL5A
-	// &scope=profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile
+	scope: [
+		'https://www.googleapis.com/auth/userinfo.profile',
+		'https://www.googleapis.com/auth/userinfo.email'
+	]
 });
 
 export const facebookAuth = facebook(auth, {

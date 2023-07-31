@@ -30,7 +30,7 @@
 	<a class="btn btn-ghost" href="/login/google">
 		<Icon icon="devicon:google" /> Sign in with Google
 	</a>
-	<a class="btn btn-ghost" href="/login/google">
+	<a class="btn btn-ghost" href="/login/facebook">
 		<Icon icon="devicon:facebook" /> Sign in with facebook
 	</a>
 </div>
