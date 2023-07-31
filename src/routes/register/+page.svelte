@@ -4,6 +4,7 @@
 </script>
 
 <h1>Register</h1>
+<p>ALready have an account? <a href="/login">Login</a></p>
 {#if form?.message}<p class="error">{form.message}</p>{/if}
 <form method="post" use:enhance>
 	<label class="label" for="username">Username</label>
@@ -23,4 +24,3 @@
 	/><br />
 	<input class="btn btn-primary mt-6 w-full max-w-md" type="submit" value="Register" />
 </form>
-<a class="btn btn-secondary btn-outline mt-6 w-full max-w-md" href="/login">Sign in</a>
