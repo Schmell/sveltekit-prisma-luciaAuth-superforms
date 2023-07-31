@@ -20,6 +20,7 @@ declare global {
 	namespace Lucia {
 		type Auth = import('$lib/server/lucia').Auth;
 		type DatabaseUserAttributes = {
+			facebook_username?: string;
 			google_username?: string;
 			github_username?: string;
 			username: string;

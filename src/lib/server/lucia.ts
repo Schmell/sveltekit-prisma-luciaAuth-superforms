@@ -4,13 +4,18 @@ import { sveltekit } from 'lucia/middleware';
 import { dev } from '$app/environment';
 import { prisma as prismaAdapter } from '@lucia-auth/adapter-prisma';
 import { prisma } from '$lib/server/prisma';
-// const client = new PrismaClient();
-import { github, google } from '@lucia-auth/oauth/providers';
+import { github, google, facebook } from '@lucia-auth/oauth/providers';
+
 import {
 	GITHUB_CLIENT_ID,
 	GITHUB_CLIENT_SECRET,
+	GITHUB_CLIENT_REDIRECTURI,
 	GOOGLE_CLIENT_ID,
-	GOOGLE_CLIENT_SECRET
+	GOOGLE_CLIENT_SECRET,
+	GOOGLE_CLIENT_REDIRECTURI,
+	FACEBOOK_CLIENT_ID,
+	FACEBOOK_CLIENT_SECRET,
+	FACEBOOK_CLIENT_REDIRECTURI
 } from '$env/static/private';
 
 export const auth = lucia({
@@ -34,14 +39,26 @@ export const auth = lucia({
 
 export const githubAuth = github(auth, {
 	clientId: GITHUB_CLIENT_ID,
-	clientSecret: GITHUB_CLIENT_SECRET
+	clientSecret: GITHUB_CLIENT_SECRET,
+	redirectUri: GITHUB_CLIENT_REDIRECTURI
 });
 
 export const googleAuth = google(auth, {
 	clientId: GOOGLE_CLIENT_ID,
 	clientSecret: GOOGLE_CLIENT_SECRET,
-	redirectUri: 'http://localhost:5173/login/google/callback'
+	redirectUri: GOOGLE_CLIENT_REDIRECTURI,
+	scope: ['https://www.googleapis.com/auth/userinfo.profile']
+	// https://schmelte.up.railway.app/login/google/callback
+	// ?state=xbh0wb5auubwejrb4jl1a2t4h277nx5289devy01f8h
+	// &code=4%2F0AZEOvhVP1lUP96QTS8dZEBSTWPsSinczAjWDYmxShl4UnsFUjxBJGdtDneqisw-8L5QL5A
+	// &scope=profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile
+});
+
+export const facebookAuth = facebook(auth, {
+	clientId: FACEBOOK_CLIENT_ID,
+	clientSecret: FACEBOOK_CLIENT_SECRET,
+	redirectUri: FACEBOOK_CLIENT_REDIRECTURI
 	// scope: ['https://www.googleapis.com/auth/userinfo.profile']
 });
-// http://localhost:5173/login/google/callback?state=yuz4gvhj5cbvehs475sjhijo8hon0jc2jthoa3ub7zc&code=4%2F0AZEOvhX32DACquGTO3jyqibRozpZQqrtGMZqLLjG40xX3UlQjiKWK3VqWZtqNaBuCBYUew
+
 export type Auth = typeof auth;

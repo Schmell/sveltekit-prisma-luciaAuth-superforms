@@ -30,7 +30,7 @@ export const actions: Actions = {
 					password // hashed by Lucia
 				},
 				attributes: {
-					github_username: '',
+					github_username: username,
 					username,
 					email,
 					name,

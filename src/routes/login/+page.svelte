@@ -1,8 +1,12 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	export let form;
 </script>
 
 <h1>Sign in</h1>
+{#if form?.message}
+	<p class="text-error">{form.message}</p>
+{/if}
 <div class="py-4">
 	<form method="post" use:enhance>
 		<label class="label" for="username">Username</label>

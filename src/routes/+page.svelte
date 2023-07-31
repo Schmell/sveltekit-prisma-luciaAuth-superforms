@@ -7,8 +7,13 @@
 </script>
 
 <h1>Profile</h1>
-<p>User id: {data.userId}</p>
-<p>Username: {data.username}</p>
+<div class="text-xs text-accent">User id:</div>
+<h2 class="m-2">{data.userId}</h2>
+<div class="divider" />
+<div class="text-xs text-accent">Username:</div>
+<h2 class="m-2">{data.username}</h2>
+<div class="divider" />
+
 <form method="post" action="?/logout" use:enhance>
-	<button class="btn" type="submit">Sign out</button>
+	<button class="btn btn-primary w-full max-w-md" type="submit">Sign out</button>
 </form>

@@ -37,6 +37,7 @@ export const actions: Actions = {
 			});
 			locals.auth.setSession(session); // set session cookie
 		} catch (e) {
+			console.log('e: ', e);
 			if (
 				e instanceof LuciaError &&
 				(e.message === 'AUTH_INVALID_KEY_ID' || e.message === 'AUTH_INVALID_PASSWORD')
