@@ -25,6 +25,7 @@ declare global {
 			github_username?: string;
 			username: string;
 			email?: string;
+			email_verified?: number;
 			name?: string;
 			avatar?: string;
 		};

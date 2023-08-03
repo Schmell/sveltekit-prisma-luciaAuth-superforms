@@ -10,12 +10,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model VerificationToken {
+  id      String @id @unique
+  user_id String @unique
+  expires BigInt
+}
+
 model User {
   id              String    @id @unique
   google_username String?   @unique
   github_username String?   @unique
   username        String    @unique
   email           String?
+  email_verified  Int?
   name            String?
   avatar          String?
   auth_session    Session[]

@@ -31,6 +31,7 @@ export const auth = lucia({
 		return {
 			username: data.username,
 			email: data.email,
+			emailVerified: Boolean(data.email_verified),
 			name: data.name,
 			avatar: data.avatar
 		};
