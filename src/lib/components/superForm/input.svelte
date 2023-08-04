@@ -21,6 +21,7 @@
 			isRequired = itemConstraint.required;
 		}
 	});
+	// $: console.log('$form[name]: ', $form[name]);
 </script>
 
 <div class="my-1">
@@ -41,7 +42,7 @@
 		value={$form[name] ?? value ?? ''}
 	/>
 	<!-- add this to th input for clientside validation:	{...$constraints[name]}  -->
-	<label for={name} class="label text-sm text-warning p-0 pt-4 h-2">
+	<label for={name} class="label text-sm text-warning p-0 pt-4 h-2 text-right w-full max-w-md">
 		{#if $errors[name]}
 			{$errors[name]}
 		{/if}

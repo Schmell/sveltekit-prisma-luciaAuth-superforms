@@ -21,7 +21,9 @@ model User {
   google_username String?   @unique
   github_username String?   @unique
   username        String    @unique
-  email           String?
+  firstname       String?
+  lastname        String?
+  email           String?   @unique
   email_verified  Int?
   name            String?
   avatar          String?

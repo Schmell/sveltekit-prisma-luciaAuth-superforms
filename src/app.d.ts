@@ -27,6 +27,8 @@ declare global {
 			email?: string;
 			email_verified?: number;
 			name?: string;
+			firstname?: string;
+			lastname?: string;
 			avatar?: string;
 		};
 		type DatabaseSessionAttributes = {};

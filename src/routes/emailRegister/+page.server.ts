@@ -5,9 +5,12 @@ import { generateEmailVerificationToken } from '$lib/server/token';
 import { isValidEmail, sendEmailVerificationLink } from '$lib/server/email';
 import { z } from 'zod';
 import type { PageServerLoad, Actions } from './$types';
-import { superValidate } from 'sveltekit-superforms/server';
+import { message, superValidate } from 'sveltekit-superforms/server';
 import { LuciaError } from 'lucia';
 import { emailRegisterSchema } from './emailRegisterSchema';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { Prisma } from '@prisma/client';
+import { capitalizeFirstLetter } from '$lib/utils';
 
 // const emailRegisterSchema = z.object({
 // 	username: z.string().min(2).max(18),
@@ -50,9 +53,12 @@ export const actions: Actions = {
 					password: form.data.password // hashed by Lucia
 				},
 				attributes: {
-					username: form.data.username,
-					name: form.data.name,
 					email: form.data.email.toLowerCase(),
+					username: form.data.username,
+					name: `${form.data.firstname} ${form.data.lastname}`,
+					firstname: form.data.firstname,
+					lastname: form.data.lastname,
+					avatar: form.data.avatar,
 					// set verified to false on register
 					email_verified: Number(false)
 				}
@@ -64,18 +70,49 @@ export const actions: Actions = {
 			});
 
 			locals.auth.setSession(session); // set session cookie
+
 			const token = await generateEmailVerificationToken(user.userId);
+
 			await sendEmailVerificationLink(token);
 		} catch (e) {
-			//  need to catch LuciaErros here
+			//  need to catch LuciaErrors here
 			if (e instanceof LuciaError) {
+				// this should be an import
+				// need to catch all the auth erros here
+				// need to deal with displaying/fixing error
+				const { detail, message, name, cause, stack } = e;
+				console.log('LuciaError: ', e);
 				return fail(500, {
 					message: e.message
 				});
 			}
 
-			console.log('e: ', e);
+			if (e instanceof Prisma.PrismaClientKnownRequestError) {
+				console.log('e.code: ', e.code);
+				// this should be reusable
+				// Unique constraint violation
+				if (e.code === 'P2002') {
+					//@ts-ignore
+					const propName = e.meta?.target[0];
 
+					form.valid = false;
+
+					form.errors[propName] = `${capitalizeFirstLetter(propName)} is already registered`;
+
+					return fail(511, {
+						form
+					});
+				}
+				// Can't reach database server at
+				if (e.code === 'P1001') {
+					console.log(' Cant reach database server at: ', e.message);
+					return fail(511, {
+						message: e.message
+					});
+				}
+			}
+
+			console.log('e: ', e);
 			return fail(500, {
 				message: 'Unknown Error occured'
 			});

@@ -5,8 +5,8 @@ export const emailRegisterSchema = z.object({
 	name: z.string().min(2).max(18).optional(),
 	firstname: z.string().max(16),
 	lastname: z.string().max(16),
-	avatar: z.string().url().optional(),
+	avatar: z.string().optional(),
 	email: z.string().email(),
 	password: z.string().min(4).max(12),
-	confirm: z.string().min(4).max(12)
+	confirm: z.string().min(4).max(12).optional()
 });
