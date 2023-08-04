@@ -1,7 +1,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import { auth } from '$lib/server/lucia';
 import { fail, redirect } from '@sveltejs/kit';
-import { superValidate } from 'sveltekit-superforms/server';
+import { message, setError, superValidate } from 'sveltekit-superforms/server';
 import { z } from 'zod';
 import { Prisma } from '@prisma/client';
 import { capitalizeFirstLetter } from '$lib/utils';
@@ -40,24 +40,18 @@ export const actions: Actions = {
 				attributes: {}
 			});
 
-			locals.auth.setSession(session); // set session cookie4
+			locals.auth.setSession(session); // set session cookie
 		} catch (e: any) {
-			//  need to catch LuciaErrors here
 			if (e instanceof LuciaError) {
-				// this should be an import
-				// need to catch all the auth erros here
-				// need to deal with displaying/fixing error
-				// console.log('e: ', e);
-
 				// Check email and password or throw
 				if (e.message === 'AUTH_INVALID_PASSWORD' || e.message === 'AUTH_INVALID_KEY_ID') {
-					console.log('e.message: ', e.message);
-					form.valid = false;
-					form.errors = { password: ['invalid'], email: ['invalid'] };
-					form.message = ' Unauthorized: Invalid Credentials';
+					//
+					setError(form, 'email', '');
+					setError(form, 'password', '');
+					form.data.password = '';
 
-					return fail(401, {
-						form
+					return message(form, 'Invalid Credentials', {
+						status: 403
 					});
 				}
 
@@ -70,25 +64,26 @@ export const actions: Actions = {
 			}
 
 			if (e instanceof Prisma.PrismaClientKnownRequestError) {
-				console.log('e.code: ', e.code);
-				// this should be reusable
+				console.log('prisma known error: ', form);
 				// Unique constraint violation
 				if (e.code === 'P2002') {
 					//@ts-ignore
 					const propName = e.meta?.target[0];
 
 					form.valid = false;
+					console.log('form.data[propName]: ', form.data[propName]);
 
 					form.errors[propName] = `${capitalizeFirstLetter(propName)} is already registered`;
 
-					return fail(511, {
+					return fail(400, {
 						form
 					});
 				}
-				// Can't reach database server at
+
+				// Can't reach database server
 				if (e.code === 'P1001') {
-					console.log(' Cant reach database server at: ', e.message);
-					return fail(511, {
+					console.log(' Cant reach database server: ', e.message);
+					return fail(503, {
 						message: e.message
 					});
 				}

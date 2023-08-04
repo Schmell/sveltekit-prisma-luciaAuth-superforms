@@ -1,13 +1,17 @@
 <script lang="ts">
-	import { capitalizeFirstLetter } from '$lib/utils';
 	import { afterUpdate } from 'svelte';
+	import Label from './label.svelte';
+	import ErrorLabel from './errorLabel.svelte';
+	import { cn } from '$lib/utils';
 
 	export let formObj; // superForm object
 	export let name: string;
 	export let placeholder: string | undefined = undefined;
-	export let type: string | undefined = undefined; // cant do this because of two-binding
+	export let type: string | undefined = undefined;
 	export let label: string | undefined = undefined;
-	export let value: string | undefined = undefined;
+
+	let className: string | undefined = undefined;
+	export { className as class };
 
 	let isRequired;
 
@@ -21,30 +25,41 @@
 			isRequired = itemConstraint.required;
 		}
 	});
-	// $: console.log('$form[name]: ', $form[name]);
 </script>
 
 <div class="my-1">
-	<label for={name} class=" p-0">
-		<span>{label ? label : capitalizeFirstLetter(name)}</span>
-		<span class="text-accent p-1">
-			{isRequired ? '*' : ''}
-		</span>
-	</label>
+	<Label {label} {name} {formObj} />
 
-	<input
-		class="input input-bordered w-full max-w-md"
-		class:input-error={$errors[name]}
-		{name}
-		type={type ? type : 'text'}
-		placeholder={placeholder ?? ''}
-		aria-invalid={$errors.email ? 'true' : undefined}
-		value={$form[name] ?? value ?? ''}
-	/>
-	<!-- add this to th input for clientside validation:	{...$constraints[name]}  -->
-	<label for={name} class="label text-sm text-warning p-0 pt-4 h-2 text-right w-full max-w-md">
-		{#if $errors[name]}
-			{$errors[name]}
-		{/if}
-	</label>
+	{#if type === 'password'}
+		<input
+			class={cn('input input-bordered w-full max-w-md', className)}
+			class:input-error={$errors[name]}
+			{name}
+			type="password"
+			placeholder={placeholder ?? ''}
+			aria-invalid={$errors.email ? 'true' : undefined}
+			bind:value={$form[name]}
+		/>
+	{:else if type === 'email'}
+		<input
+			class={cn('input input-bordered w-full max-w-md', className)}
+			class:input-error={$errors[name]}
+			{name}
+			type="email"
+			placeholder={placeholder ?? ''}
+			aria-invalid={$errors.email ? 'true' : undefined}
+			bind:value={$form[name]}
+		/>
+	{:else}
+		<input
+			class={cn('input input-bordered w-full max-w-md', className)}
+			class:input-error={$errors[name]}
+			{name}
+			placeholder={placeholder ?? ''}
+			aria-invalid={$errors.email ? 'true' : undefined}
+			bind:value={$form[name]}
+		/>
+	{/if}
+
+	<ErrorLabel {name} {formObj} />
 </div>

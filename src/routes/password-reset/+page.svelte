@@ -1,21 +1,28 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import Button from '$components/form/Button.svelte';
+	import { Form, Input } from '$components/superForm/index.js';
+	import { superForm } from 'sveltekit-superforms/client';
+	import * as flashModule from 'sveltekit-flash-message/client';
 
-	import type { ActionData } from './$types';
+	export let data;
 
-	export let form: ActionData;
+	const formObj = superForm(data.form, {
+		autoFocusOnError: true,
+		flashMessage: {
+			module: flashModule,
+			onError: ({ result, message }) => {
+				const errorMessage = result.error.message;
+				message.set({ type: 'error', message: errorMessage });
+			}
+		},
+
+		syncFlashMessage: true
+	});
 </script>
 
-<h1>Reset password</h1>
-<form method="post" use:enhance>
-	<label for="email">Email</label>
-	<input name="email" id="email" /><br />
-	<input type="submit" />
-</form>
-{#if form?.message}
-	<p class="error">{form.message}</p>
-{/if}
-{#if form?.success}
-	<p>Your password reset link was sent to your inbox</p>
-{/if}
-<a href="/login">Sign in</a>
+<h1 class="m-0">Reset password</h1>
+<Form {formObj}>
+	<Input name="email" {formObj} />
+	<Button>Submit</Button>
+	<div slot="bottomLinks"><a href="/login">Sign in</a></div>
+</Form>

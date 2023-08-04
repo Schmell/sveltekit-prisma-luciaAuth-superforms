@@ -48,6 +48,12 @@
 		"@lucia-auth/adapter-prisma": "^3.0.0",
 		"@lucia-auth/oauth": "^2.0.1",
 		"@prisma/client": "^4.16.1",
-		"lucia": "^2.0.0"
+		"class-variance-authority": "^0.7.0",
+		"clsx": "^2.0.0",
+		"lucia": "^2.0.0",
+		"lucide-svelte": "^0.263.0",
+		"sveltekit-flash-message": "^2.1.0",
+		"tailwind-merge": "^1.14.0",
+		"tailwindcss-animate": "^1.0.6"
 	}
 }

@@ -1,15 +1,19 @@
 import { redirect, type Actions, fail } from '@sveltejs/kit';
+import { loadFlash } from 'sveltekit-flash-message/server';
 
 import type { PageServerLoad } from './$types';
 import { auth } from '$lib/server/lucia';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = loadFlash(async (event) => {
+	const { locals } = event;
 	const session = await locals.auth.validate();
+
 	if (!session) throw redirect(302, '/login');
+
 	return {
 		user: session.user
 	};
-};
+});
 
 export const actions: Actions = {
 	logout: async ({ locals }) => {

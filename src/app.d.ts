@@ -9,7 +9,9 @@ declare global {
 		interface Locals {
 			auth: import('lucia').AuthRequest;
 		}
-		// interface PageData {}
+		interface PageData {
+			flash?: { type: 'success' | 'error'; message: string };
+		}
 		// interface Platform {}
 	}
 	var prisma: PrismaClient;
