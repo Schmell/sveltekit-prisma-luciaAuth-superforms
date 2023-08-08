@@ -3,11 +3,21 @@
 	import { Form, Input } from '$components/superForm/index.js';
 	import { superForm } from 'sveltekit-superforms/client';
 	import * as flashModule from 'sveltekit-flash-message/client';
+	import { getFlash } from 'sveltekit-flash-message/client';
+	import { page } from '$app/stores';
 
 	export let data;
 
+	const flash = getFlash(page);
+	$: console.log('flash: ', $flash);
+
 	const formObj = superForm(data.form, {
 		autoFocusOnError: true,
+		onResult: ({ result }) => {
+			if (result.type === 'success') {
+				console.log('result: ', result);
+			}
+		},
 		flashMessage: {
 			module: flashModule,
 			onError: ({ result, message }) => {
@@ -15,6 +25,9 @@
 				message.set({ type: 'error', message: errorMessage });
 			}
 		},
+		// onResult: {
+
+		// },
 
 		syncFlashMessage: true
 	});

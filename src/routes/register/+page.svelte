@@ -1,26 +1,29 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	export let form;
+	import Button from '$lib/components/form/Button.svelte';
+	import Input from '$lib/components/superForm/input.svelte';
+	import { superForm } from 'sveltekit-superforms/client';
+
+	import { emailRegisterSchema } from './emailRegisterSchema';
+	import Form from '$lib/components/superForm/form.svelte';
+
+	export let data;
+
+	const formObj = superForm(data.form, {
+		validators: emailRegisterSchema,
+		autoFocusOnError: true
+	});
 </script>
 
-<h1>Register</h1>
-<p>ALready have an account? <a href="/login">Login</a></p>
-{#if form?.message}<p class="error">{form.message}</p>{/if}
-<form method="post" use:enhance>
-	<label class="label" for="username">Username</label>
-	<input class="input input-bordered w-full max-w-md" name="username" id="username" /><br />
-	<label class="label" for="name">Name</label>
-	<input class="input input-bordered w-full max-w-md" name="name" id="name" /><br />
-	<label class="label" for="email">email</label>
-	<input class="input input-bordered w-full max-w-md" name="email" id="email" /><br />
-	<label class="label" for="avatar">avatar</label>
-	<input class="input input-bordered w-full max-w-md" name="avatar" id="avatar" /><br />
-	<label class="label" for="password">Password</label>
-	<input
-		class="input input-bordered w-full max-w-md"
-		type="password"
-		name="password"
-		id="password"
-	/><br />
-	<input class="btn btn-primary mt-6 w-full max-w-md" type="submit" value="Register" />
-</form>
+<h1 class="m-0">Email Register</h1>
+<p class="m-0">Already have an account? <a href="/login">Login</a></p>
+<Form {formObj}>
+	<Input name="email" type="email" {formObj} />
+	<Input name="username" {formObj} />
+	<Input name="firstname" label="First name" {formObj} />
+	<Input name="lastname" label="Last name" {formObj} />
+	<Input name="avatar" {formObj} />
+	<Input name="password" type="password" {formObj} />
+	<Input name="confirm" type="password" label="Confirm password" {formObj} />
+	<Button>Register</Button>
+	<div slot="bottomLinks"><a href="/emailLogin">Sign in with email</a></div>
+</Form>

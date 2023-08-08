@@ -27,7 +27,7 @@
 	});
 </script>
 
-<div class="my-1">
+<div class="flex flex-col my-1">
 	<Label {label} {name} {formObj} />
 
 	{#if type === 'password'}

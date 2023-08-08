@@ -1,14 +1,18 @@
 import { auth } from '$lib/server/lucia';
 import { fail } from '@sveltejs/kit';
-import { redirect } from 'sveltekit-flash-message/server';
-// import { db } from '$lib/server/db';
+import { z } from 'zod';
+import type { Actions } from './$types';
+import type { UserSchema } from 'lucia';
+
 import { generatePasswordResetToken } from '$lib/server/token';
 import { isValidEmail, sendPasswordResetLink } from '$lib/server/email';
 
-import type { Actions } from './$types';
-import type { UserSchema } from 'lucia';
-import { actionResult, message, setError, superValidate } from 'sveltekit-superforms/server';
-import { z } from 'zod';
+import { message, setError, superValidate } from 'sveltekit-superforms/server';
+import { redirect } from 'sveltekit-flash-message/server';
+import { updateFlash } from 'sveltekit-flash-message/client';
+import { page } from '$app/stores';
+import { capitalizeFirstLetter } from '$lib/utils';
+import { Prisma } from '@prisma/client';
 
 const passwordResetSchema = z.object({
 	email: z.string().email()
@@ -25,7 +29,8 @@ export const load = async ({ locals }) => {
 };
 
 export const actions: Actions = {
-	default: async ({ request }) => {
+	default: async (event) => {
+		const { request } = event;
 		const form = await superValidate(request, passwordResetSchema);
 		// const formData = await request.formData();
 		// const email = formData.get('email');
@@ -46,7 +51,7 @@ export const actions: Actions = {
 			});
 
 			if (!storedUser) {
-				form.valid = false;
+				// form.valid = false;
 				setError(form, 'email', 'User does not exist');
 				return message(form, 'User does not exist', {
 					status: 403
@@ -55,23 +60,38 @@ export const actions: Actions = {
 
 			const user = auth.transformDatabaseUser(storedUser as UserSchema);
 			const token = await generatePasswordResetToken(user.userId);
-			await sendPasswordResetLink(token);
-			// throw redirect(303,'/emailLogin', {
-			// 	type: 'success',
-			// 	message: 'Check email for reset link'
-			// });
-
-			actionResult('redirect', '/emailLogin', {
-				message: { type: 'success', message: 'Check email for reset link' },
-				status: 303
-			});
-
-			// return {
-			// 	success: true
-			// };
+			await sendPasswordResetLink(form.data.email, token, event);
+			console.log('page: ', page);
+			updateFlash(page);
+			// throw redirect(303, '/login', { type: 'success', message: 'Checkit' }, event);
+			// return setError(form, 'email', 'Check email for reset link');
 		} catch (e) {
+			console.log('e: ', e);
 			// check LuciaErrors
-			// check PrismaKnownErrors
+			// Prisma errors
+			if (e instanceof Prisma.PrismaClientKnownRequestError) {
+				console.log('e.code: ', e.code);
+
+				// Unique constraint violation
+				if (e.code === 'P2002') {
+					// @ts-ignore
+					const propName = e.meta?.target[0];
+					setError(form, propName, `${capitalizeFirstLetter(propName)} is already registered`);
+
+					return fail(400, {
+						form
+					});
+				}
+
+				// Can't reach database server at
+				if (e.code === 'P1001') {
+					console.log(' Cant reach database server at: ', e.message);
+
+					return fail(511, {
+						message: e.message
+					});
+				}
+			}
 			return fail(500, {
 				message: 'An unknown error occurred'
 			});

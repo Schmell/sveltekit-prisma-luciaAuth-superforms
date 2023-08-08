@@ -1,8 +1,7 @@
 <script lang="ts">
-	//
-	import { Form, Input } from '$lib/components/superForm';
+	import { Form } from '$components/superForm';
+	import { Button } from 'svelte-email';
 	import { superForm } from 'sveltekit-superforms/client';
-	import Button from '$lib/components/form/Button.svelte';
 	import * as flashModule from 'sveltekit-flash-message/client';
 
 	export let data;
@@ -19,18 +18,17 @@
 
 		syncFlashMessage: true
 	});
-
-	//
 </script>
 
-<h1 class="m-0">Email login</h1>
+{#if data.field === 'email'}
+	<h1>Link your accounts</h1>
 
-<Form {formObj}>
-	<Input name="email" type="email" {formObj} />
-	<Input name="password" type="password" {formObj} />
-	<Button>submit</Button>
-	<div slot="bottomLinks" class="flex justify-between mt-1">
-		<a href="/password-reset">Reset password</a>
-		<a href="/signup">Create an account</a>
-	</div>
-</Form>
+	<p>A user with the assoicated email is alreay registered.</p>
+	<p>Would you like to link these accounts together</p>
+	<Form {formObj}>
+		<Button class="btn btn-primary w-full max-w-md" href="/">Send verification email</Button>
+	</Form>
+{/if}
+{#if data.field === 'username'}
+	<h1>Username already exists</h1>
+{/if}
