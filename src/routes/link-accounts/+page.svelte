@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { Form } from '$components/superForm';
-	import { Button } from 'svelte-email';
+
 	import { superForm } from 'sveltekit-superforms/client';
 	import * as flashModule from 'sveltekit-flash-message/client';
+	import Button from '$components/form/Button.svelte';
 
 	export let data;
 
@@ -26,7 +27,7 @@
 	<p>A user with the assoicated email is alreay registered.</p>
 	<p>Would you like to link these accounts together</p>
 	<Form {formObj}>
-		<Button class="btn btn-primary w-full max-w-md" href="/">Send verification email</Button>
+		<Button class="btn btn-primary w-full max-w-md">Send verification email</Button>
 	</Form>
 {/if}
 {#if data.field === 'username'}
