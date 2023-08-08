@@ -1,6 +1,6 @@
 import { redirect } from 'sveltekit-flash-message/server';
 import { createTransporter } from '$lib/emails/createTransporter';
-import { HOST } from '$env/static/private';
+import { CALLBACK_HOST } from '$env/static/private';
 import { dev } from '$app/environment';
 
 //emailOptions - who sends what to whom
@@ -10,7 +10,7 @@ const sendEmail = async (emailOptions) => {
 };
 
 export const sendEmailVerificationLink = async (email: string, token: string) => {
-	const url = `${HOST}/email-verification/${token} `;
+	const url = `${CALLBACK_HOST}/email-verification/${token} `;
 
 	const message = {
 		from: '',
@@ -31,7 +31,7 @@ export const sendEmailVerificationLink = async (email: string, token: string) =>
 };
 
 export const sendPasswordResetLink = async (email: string, token: string, event) => {
-	const url = `${HOST}/password-reset/${token}`;
+	const url = `${CALLBACK_HOST}/password-reset/${token}`;
 	const message = {
 		from: '',
 		to: email,
