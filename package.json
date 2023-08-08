@@ -55,7 +55,6 @@
 		"lucia": "^2.0.0",
 		"lucide-svelte": "^0.263.0",
 		"nodemailer": "^6.9.4",
-		"svelte-email": "^0.0.4",
 		"sveltekit-flash-message": "^2.1.0",
 		"tailwind-merge": "^1.14.0",
 		"tailwindcss-animate": "^1.0.6"
