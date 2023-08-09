@@ -1,5 +1,6 @@
 import { auth, githubAuth } from '$lib/server/lucia.js';
 import { OAuthRequestError } from '@lucia-auth/oauth';
+import { Prisma } from '@prisma/client';
 // http://localhost:5173/login/github/callback?code=897192588be93cec42d5&state=5xnqatfsoztizmqs4x9gwml4x4bcvbsmz184tt2klhz
 export const GET = async ({ url, cookies, locals }) => {
 	const storedState = cookies.get('github_oauth_state');
@@ -13,21 +14,25 @@ export const GET = async ({ url, cookies, locals }) => {
 		});
 	}
 
+	const { existingUser, githubUser, createUser, createKey } = await githubAuth.validateCallback(
+		code
+	);
+
 	try {
-		const { existingUser, githubUser, createUser } = await githubAuth.validateCallback(code);
-		// console.log('existingUser: ', existingUser);
-		console.log('githubUser: ', githubUser);
+		const names = githubUser.name?.split(' ');
 
 		const getUser = async () => {
 			if (existingUser) return existingUser;
 
 			const user = await createUser({
 				attributes: {
-					github_username: githubUser.login,
 					username: githubUser.login,
 					email: githubUser.email ?? '',
 					name: githubUser.name ?? '',
-					avatar: githubUser.avatar_url
+					firstname: names ? names[0] : '',
+					lastname: names ? names[1] : '',
+					avatar: githubUser.avatar_url,
+					email_verified: 1
 				}
 			});
 
@@ -54,6 +59,47 @@ export const GET = async ({ url, cookies, locals }) => {
 			return new Response(null, {
 				status: 400
 			});
+		}
+		if (e instanceof Prisma.PrismaClientKnownRequestError) {
+			// Unique constraint violation
+			if (e.code === 'P2002') {
+				// @ts-ignore
+				const violatedField = e.meta?.target[0];
+				if (violatedField === 'email') {
+					const user = await prisma.user.findFirst({
+						where: {
+							email: githubUser.email
+						}
+					});
+					if (user?.email_verified) {
+						await createKey(user.id);
+						const session = await auth.createSession({
+							userId: user.id,
+							attributes: {}
+						});
+
+						locals.auth.setSession(session);
+					}
+				}
+
+				return new Response(null, {
+					status: 302,
+					headers: {
+						Location: '/'
+					}
+				});
+
+				// throw redirect(307, `/link-accounts?field=${violatedField}`);
+			}
+
+			// Can't reach database server
+			if (e.code === 'P1001') {
+				console.log(' Cant reach database server: ', e.message);
+				return new Response(null, {
+					status: 500
+				});
+			}
+			console.log('prisma known error: ', e);
 		}
 
 		return new Response(null, {

@@ -17,18 +17,16 @@ model VerificationToken {
 }
 
 model User {
-  id              String    @id @unique
-  google_username String?   @unique
-  github_username String?   @unique
-  username        String    @unique
-  firstname       String?
-  lastname        String?
-  email           String?   @unique
-  email_verified  Int?
-  name            String?
-  avatar          String?
-  auth_session    Session[]
-  auth_key        Key[]
+  id             String    @id @unique
+  username       String
+  firstname      String?
+  lastname       String?
+  email          String?   @unique
+  email_verified Int?
+  name           String?
+  avatar         String?
+  auth_session   Session[]
+  auth_key       Key[]
 }
 
 model Session {

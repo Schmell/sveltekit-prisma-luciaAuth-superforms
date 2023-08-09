@@ -1,7 +1,8 @@
 import { auth, googleAuth } from '$lib/server/lucia.js';
 import { OAuthRequestError } from '@lucia-auth/oauth';
 import { Prisma } from '@prisma/client';
-import { fail, redirect } from '@sveltejs/kit';
+// import { fail, redirect } from '@sveltejs/kit';
+import { redirect } from 'sveltekit-flash-message/server';
 
 export const GET = async ({ url, cookies, locals }) => {
 	const storedState = cookies.get('google_oauth_state');
@@ -15,19 +16,24 @@ export const GET = async ({ url, cookies, locals }) => {
 		});
 	}
 
+	const { existingUser, googleUser, createUser, createKey } = await googleAuth.validateCallback(
+		code
+	);
 	try {
-		const { existingUser, googleUser, createUser } = await googleAuth.validateCallback(code);
-
 		const getUser = async () => {
 			if (existingUser) return existingUser;
 
+			console.log('googleUser: ', googleUser);
+
 			const user = await createUser({
 				attributes: {
-					google_username: googleUser.name,
 					username: googleUser.name,
 					email: googleUser.email,
 					name: googleUser.name,
-					avatar: googleUser.picture
+					firstname: googleUser.given_name,
+					lastname: googleUser.family_name,
+					avatar: googleUser.picture,
+					email_verified: 1
 				}
 			});
 
@@ -60,14 +66,37 @@ export const GET = async ({ url, cookies, locals }) => {
 		}
 		// Catch prisma error
 		// could link the account but need to re-verify email
-		// http://localhost:5173/login/google/callback?state=2aduqs6bjs3cjcdovpqff1l3m56edilifeh9xt4q3s2&code=4%2F0Adeu5BVuAyfAMXEnnUVYQwoozdDtpeQhQlpwiDSvY5wcw8HyHkZ9XzAYA0APULba0e9ucQ&scope=email+profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+openid&authuser=0&prompt=consent
+
 		if (e instanceof Prisma.PrismaClientKnownRequestError) {
 			// Unique constraint violation
 			if (e.code === 'P2002') {
 				// @ts-ignore
-				console.log('Unique constraint: ', e.meta?.target[0]);
-				// @ts-ignore
-				throw redirect(300, `/link-accounts?field=${e.meta?.target[0]}`);
+				const violatedField = e.meta?.target[0];
+				if (violatedField === 'email') {
+					const user = await prisma.user.findFirst({
+						where: {
+							email: googleUser.email
+						}
+					});
+					if (user?.email_verified) {
+						await createKey(user.id);
+						const session = await auth.createSession({
+							userId: user.id,
+							attributes: {}
+						});
+
+						locals.auth.setSession(session);
+					}
+				}
+
+				return new Response(null, {
+					status: 302,
+					headers: {
+						Location: '/'
+					}
+				});
+
+				// throw redirect(307, `/link-accounts?field=${violatedField}`);
 			}
 
 			// Can't reach database server

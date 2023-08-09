@@ -32,6 +32,7 @@ export const sendEmailVerificationLink = async (email: string, token: string) =>
 
 export const sendPasswordResetLink = async (email: string, token: string, event) => {
 	const url = `${CALLBACK_HOST}/password-reset/${token}`;
+
 	const message = {
 		from: '',
 		to: email,
@@ -39,9 +40,12 @@ export const sendPasswordResetLink = async (email: string, token: string, event)
 		text: 'You have requested to reset your password for the svelte-way app',
 		html: `<p>Verify your account by clicking the link below</p> <a href=${url}>${url}</a>`
 	};
+
 	try {
 		sendEmail(message);
+
 		if (dev) console.log(`Your password reset link: ${url}`);
+
 		return {
 			success: true
 		};
