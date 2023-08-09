@@ -1,10 +1,10 @@
 import { auth, googleAuth } from '$lib/server/lucia.js';
 import { OAuthRequestError } from '@lucia-auth/oauth';
 import { Prisma } from '@prisma/client';
-// import { fail, redirect } from '@sveltejs/kit';
-import { redirect } from 'sveltekit-flash-message/server';
+import { setFlash } from 'sveltekit-flash-message/server';
 
-export const GET = async ({ url, cookies, locals }) => {
+export const GET = async (event) => {
+	const { url, cookies, locals } = event;
 	const storedState = cookies.get('google_oauth_state');
 	const state = url.searchParams.get('state');
 	const code = url.searchParams.get('code');
@@ -47,7 +47,7 @@ export const GET = async ({ url, cookies, locals }) => {
 		});
 
 		locals.auth.setSession(session);
-
+		// setFlash({ type: 'success', message: 'New User Created' }, event);
 		return new Response(null, {
 			status: 302,
 			headers: {
@@ -64,14 +64,15 @@ export const GET = async ({ url, cookies, locals }) => {
 				status: 400
 			});
 		}
-		// Catch prisma error
-		// could link the account but need to re-verify email
 
 		if (e instanceof Prisma.PrismaClientKnownRequestError) {
 			// Unique constraint violation
 			if (e.code === 'P2002') {
-				// @ts-ignore
-				const violatedField = e.meta?.target[0];
+				const target = e.meta?.target as string[];
+				const violatedField = target[0];
+
+				if (target.length > 0) console.log('Unique constraint violations: ', target);
+
 				if (violatedField === 'email') {
 					const user = await prisma.user.findFirst({
 						where: {
@@ -95,8 +96,6 @@ export const GET = async ({ url, cookies, locals }) => {
 						Location: '/'
 					}
 				});
-
-				// throw redirect(307, `/link-accounts?field=${violatedField}`);
 			}
 
 			// Can't reach database server
