@@ -32,7 +32,7 @@
 
 	{#if type === 'password'}
 		<input
-			class={cn('input input-bordered w-full max-w-md', className)}
+			class={cn('input input-bordered w-full max-w-lg', className)}
 			class:input-error={$errors[name]}
 			{name}
 			type="password"
@@ -42,7 +42,7 @@
 		/>
 	{:else if type === 'email'}
 		<input
-			class={cn('input input-bordered w-full max-w-md', className)}
+			class={cn('input input-bordered w-full max-w-lg', className)}
 			class:input-error={$errors[name]}
 			{name}
 			type="email"
@@ -52,7 +52,7 @@
 		/>
 	{:else}
 		<input
-			class={cn('input input-bordered w-full max-w-md', className)}
+			class={cn('input input-bordered w-full max-w-lg', className)}
 			class:input-error={$errors[name]}
 			{name}
 			placeholder={placeholder ?? ''}

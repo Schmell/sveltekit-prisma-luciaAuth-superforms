@@ -1,9 +1,11 @@
 import { auth } from '$lib/server/lucia';
 import { validateEmailVerificationToken } from '$lib/server/token';
+import { setFlash } from 'sveltekit-flash-message/server';
 
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async ({ params, locals }) => {
+export const GET: RequestHandler = async (event) => {
+	const { params, locals } = event;
 	const { token } = params;
 	try {
 		const userId = await validateEmailVerificationToken(token);
@@ -17,8 +19,9 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			attributes: {}
 		});
 		locals.auth.setSession(session);
+		setFlash({ type: 'success', message: 'Email verified' }, event);
 		return new Response(null, {
-			status: 302,
+			status: 200,
 			headers: {
 				Location: '/'
 			}

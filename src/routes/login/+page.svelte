@@ -24,6 +24,10 @@
 	//
 </script>
 
+<svelte:head>
+	<title>Login - Svelte-way</title>
+</svelte:head>
+
 <h1 class="m-0">Login</h1>
 <p class="m-0">Don't have an account? <a href="/register">Register</a></p>
 <Form {formObj}>

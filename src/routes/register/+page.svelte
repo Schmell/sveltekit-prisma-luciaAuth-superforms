@@ -1,10 +1,9 @@
 <script lang="ts">
-	import Button from '$lib/components/form/Button.svelte';
 	import Input from '$lib/components/superForm/input.svelte';
 	import { superForm } from 'sveltekit-superforms/client';
 
 	import { emailRegisterSchema } from './emailRegisterSchema';
-	import Form from '$lib/components/superForm/form.svelte';
+	import { Form, Button } from '$lib/components/superForm';
 
 	export let data;
 
@@ -13,6 +12,10 @@
 		autoFocusOnError: true
 	});
 </script>
+
+<svelte:head>
+	<title>Register - Svelte-way</title>
+</svelte:head>
 
 <h1 class="m-0">Email Register</h1>
 <p class="m-0">Already have an account? <a href="/login">Login</a></p>

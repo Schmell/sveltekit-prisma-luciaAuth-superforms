@@ -1,17 +1,15 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { Button } from '$components/superForm';
 
-	import type { PageData } from './$types';
-
-	export let data: PageData;
+	export let data;
 	$: ({ user } = data);
-	// $: console.log('user: ', user);
 </script>
 
 <h1>Profile</h1>
 
-<div class="flex gap-4 items-center bg-neutral-800 rounded-xl p-2">
-	<img class="rounded-full w-10 h-10 bg-neutral-content" src={user.avatar} alt={user.username} />
+<div class="flex gap-4 items-center bg-neutral-800 rounded-xl p-2 pl-4">
+	<img class="rounded-full w-14 h-14 bg-neutral-content" src={user.avatar} alt={user.username} />
 	<div>
 		<h2 class="m-0">{user.username}</h2>
 		<div class="text-xs text-secondary">{user.userId}</div>
@@ -19,12 +17,12 @@
 </div>
 
 <div class="mt-2 text-xs text-accent">Name:</div>
-<h2 class="m-2 mb-4">{user.name}</h2>
+<h2 class="m-0 ml-2 mb-4">{user.name}</h2>
 
 <div class="text-xs text-accent">Email:</div>
-<h2 class="m-2">{user.email}</h2>
+<h4 class="m-0 ml-2 mb-4">{user.email}</h4>
 
 <div class="divider" />
 <form method="post" action="?/logout" use:enhance>
-	<button class="btn btn-primary w-full max-w-md" type="submit">Sign out</button>
+	<Button>Sign out</Button>
 </form>
