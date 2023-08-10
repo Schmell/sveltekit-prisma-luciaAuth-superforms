@@ -14,6 +14,14 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
+export function from(url: URL) {
+	const from = url.searchParams.get('from');
+	if (from) {
+		return from;
+	}
+	return '';
+}
+
 export const serializeNonPOJOs = (value: object | null) => {
 	return structuredClone(value);
 };

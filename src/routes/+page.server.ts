@@ -8,7 +8,7 @@ export const load: PageServerLoad = loadFlash(async (event) => {
 	const { locals } = event;
 	const session = await locals.auth.validate();
 
-	if (!session) throw redirect(302, '/login');
+	if (!session) throw redirect(302, '/auth/login');
 
 	return {
 		user: session.user
@@ -18,9 +18,9 @@ export const load: PageServerLoad = loadFlash(async (event) => {
 export const actions: Actions = {
 	logout: async ({ locals }) => {
 		const session = await locals.auth.validate();
-		if (!session) return fail(401);
+		if (!session) return redirect(307, '/auth/login');
 		await auth.invalidateSession(session.sessionId); // invalidate session
 		locals.auth.setSession(null); // remove cookie
-		throw redirect(302, '/login'); // redirect to login page
+		throw redirect(302, '/auth/login'); // redirect to login page
 	}
 };

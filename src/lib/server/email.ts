@@ -1,16 +1,14 @@
-import { redirect } from 'sveltekit-flash-message/server';
 import { createTransporter } from '$lib/emails/createTransporter';
 import { CALLBACK_HOST } from '$env/static/private';
 import { dev } from '$app/environment';
 
-//emailOptions - who sends what to whom
 const sendEmail = async (emailOptions) => {
 	let emailTransporter: any = await createTransporter();
 	await emailTransporter.sendMail(emailOptions);
 };
 
 export const sendEmailVerificationLink = async (email: string, token: string) => {
-	const url = `${CALLBACK_HOST}/email-verification/${token} `;
+	const url = `${CALLBACK_HOST}/auth/email-verification/${token} `;
 
 	const message = {
 		from: '',
@@ -21,7 +19,7 @@ export const sendEmailVerificationLink = async (email: string, token: string) =>
 	};
 
 	try {
-		console.log('trans.sendMail(message);: ', message);
+		// console.log('trans.sendMail(message);: ', message);
 		sendEmail(message);
 	} catch (error) {
 		console.log('sendEmailVerificationLink error: ', error);
@@ -31,7 +29,7 @@ export const sendEmailVerificationLink = async (email: string, token: string) =>
 };
 
 export const sendPasswordResetLink = async (email: string, token: string, event) => {
-	const url = `${CALLBACK_HOST}/password-reset/${token}`;
+	const url = `${CALLBACK_HOST}/auth/password-reset/${token}`;
 
 	const message = {
 		from: '',
