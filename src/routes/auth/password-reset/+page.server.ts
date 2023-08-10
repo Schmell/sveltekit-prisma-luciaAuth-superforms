@@ -9,21 +9,15 @@ import { isValidEmail, sendPasswordResetLink } from '$lib/server/email';
 
 import { message, setError, superValidate } from 'sveltekit-superforms/server';
 import { redirect } from 'sveltekit-flash-message/server';
-// import { updateFlash } from 'sveltekit-flash-message/client';
-import { page } from '$app/stores';
 import { capitalizeFirstLetter } from '$lib/utils';
 import { Prisma } from '@prisma/client';
+// import { updateFlash } from 'sveltekit-flash-message/client';
 
 const passwordResetSchema = z.object({
 	email: z.string().email()
 });
 
 export const load = async ({ locals }) => {
-	// const session = await locals.auth.validate();
-	// if (session) {
-	// 	if (!session.user.emailVerified) throw redirect(302, '/email-verification');
-	// 	throw redirect(302, '/');
-	// }
 	const form = await superValidate(passwordResetSchema);
 	return { form };
 };
@@ -32,17 +26,9 @@ export const actions: Actions = {
 	default: async (event) => {
 		const { request } = event;
 		const form = await superValidate(request, passwordResetSchema);
-		// const formData = await request.formData();
-		// const email = formData.get('email');
+
 		if (!form.valid) {
 			return fail(400, { form });
-		}
-		// basic check
-		if (!isValidEmail(form.data.email)) {
-			console.log('Invalid email: ');
-			return fail(400, {
-				message: 'Invalid email'
-			});
 		}
 
 		try {
@@ -59,12 +45,17 @@ export const actions: Actions = {
 			}
 
 			const user = auth.transformDatabaseUser(storedUser as UserSchema);
+
 			const token = await generatePasswordResetToken(user.userId);
-			await sendPasswordResetLink(form.data.email, token, event);
-			// console.log('page: ', page);
-			// updateFlash(page);
-			throw redirect(307, '/auth/login', { type: 'success', message: 'Checkit' }, event);
-			// return setError(form, 'email', 'Check email for reset link');
+
+			await sendPasswordResetLink(form.data.email, token);
+
+			throw redirect(
+				307,
+				'/auth/login',
+				{ type: 'success', message: 'Check your email for a reset link' },
+				event
+			);
 		} catch (e) {
 			console.log('e: ', e);
 			// check LuciaErrors

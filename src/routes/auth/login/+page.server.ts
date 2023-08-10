@@ -6,7 +6,6 @@ import { z } from 'zod';
 import { Prisma } from '@prisma/client';
 import { capitalizeFirstLetter } from '$lib/utils';
 import { LuciaError } from 'lucia';
-import { isLuciaError } from '$lib/utils/validators';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const session = await locals.auth.validate();

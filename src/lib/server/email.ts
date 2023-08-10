@@ -28,7 +28,7 @@ export const sendEmailVerificationLink = async (email: string, token: string) =>
 	if (dev) console.log(`Your email verification link: ${url}`);
 };
 
-export const sendPasswordResetLink = async (email: string, token: string, event) => {
+export const sendPasswordResetLink = async (email: string, token: string) => {
 	const url = `${CALLBACK_HOST}/auth/password-reset/${token}`;
 
 	const message = {
