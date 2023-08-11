@@ -1,4 +1,5 @@
 import { prisma } from '$lib/server/prisma.js';
+import { Prisma } from '@prisma/client';
 import { error } from '@sveltejs/kit';
 import { generateRandomString, isWithinExpiration } from 'lucia/utils';
 
@@ -21,13 +22,23 @@ export const generateEmailVerificationToken = async (userId: string) => {
 
 	const token = generateRandomString(63);
 
-	await prisma.verificationToken.create({
-		data: {
-			id: token,
-			expires: new Date().getTime() + EXPIRES_IN,
-			user_id: userId
+	try {
+		await prisma.verificationToken.create({
+			data: {
+				id: token,
+				expires: new Date().getTime() + EXPIRES_IN,
+				user_id: userId
+			}
+		});
+	} catch (e) {
+		if (e instanceof Prisma.PrismaClientKnownRequestError) {
+			console.log('PrismaClientKnownRequestError: ', e);
+
+			if (e.code === 'P2002') {
+				console.log('Unique constraint: ', e);
+			}
 		}
-	});
+	}
 
 	return token;
 };
@@ -75,13 +86,17 @@ export const generatePasswordResetToken = async (userId: string) => {
 
 	const token = generateRandomString(63);
 
-	await prisma.verificationToken.create({
-		data: {
-			id: token,
-			expires: new Date().getTime() + EXPIRES_IN,
-			user_id: userId
-		}
-	});
+	try {
+		await prisma.verificationToken.create({
+			data: {
+				id: token,
+				expires: new Date().getTime() + EXPIRES_IN,
+				user_id: userId
+			}
+		});
+	} catch (e) {
+		console.log('e: ', e);
+	}
 
 	return token;
 };
