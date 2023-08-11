@@ -48,7 +48,11 @@ export const actions: Actions = {
 
 			const token = await generatePasswordResetToken(user.userId);
 
-			await sendPasswordResetLink(form.data.email, token);
+			try {
+				await sendPasswordResetLink(form.data.email, token);
+			} catch (error) {
+				console.log('error: ', error);
+			}
 
 			// throw redirect(
 			// 	301,

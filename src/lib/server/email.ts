@@ -44,9 +44,10 @@ export const sendPasswordResetLink = async (email: string, token: string) => {
 		if (dev) console.log(`Your password reset link: ${url}`);
 
 		return {
-			success: true
+			success: true,
+			message: ''
 		};
-	} catch (error) {
+	} catch (error: any) {
 		console.log('error: ', error);
 		return {
 			success: false,
