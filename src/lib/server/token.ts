@@ -1,15 +1,10 @@
-// import { db } from './db.js';
 import { prisma } from '$lib/server/prisma.js';
+import { error } from '@sveltejs/kit';
 import { generateRandomString, isWithinExpiration } from 'lucia/utils';
 
 const EXPIRES_IN = 1000 * 60 * 60 * 2; // 2 hours
 
 export const generateEmailVerificationToken = async (userId: string) => {
-	// const storedUserTokens = await db
-	// 	.selectFrom('email_verification_token')
-	// 	.selectAll()
-	// 	.where('user_id', '=', userId)
-	// 	.execute();
 	const storedUserTokens = await prisma.verificationToken.findMany({
 		where: { user_id: userId }
 	});
@@ -34,25 +29,10 @@ export const generateEmailVerificationToken = async (userId: string) => {
 		}
 	});
 
-	// await db
-	// 	.insertInto('email_verification_token')
-	// 	.values({
-	// 		id: token,
-	// 		expires: new Date().getTime() + EXPIRES_IN,
-	// 		user_id: userId
-	// 	})
-	// 	.executeTakeFirst();
-
 	return token;
 };
 
 export const validateEmailVerificationToken = async (token: string) => {
-	// const storedToken = await db.transaction().execute(async (trx) => {
-	// const storedToken = await trx
-	// 	.selectFrom('email_verification_token')
-	// 	.selectAll()
-	// 	.where('id', '=', token)
-	// 	.executeTakeFirst();
 	const storedToken = async () => {
 		const storedToken = await prisma.verificationToken.findFirst({
 			where: { id: token }
@@ -66,7 +46,9 @@ export const validateEmailVerificationToken = async (token: string) => {
 
 		return storedToken;
 	};
+
 	const { expires, user_id } = await storedToken();
+
 	const tokenExpires = Number(expires); // bigint => number conversion
 
 	if (!isWithinExpiration(tokenExpires)) {
@@ -77,11 +59,6 @@ export const validateEmailVerificationToken = async (token: string) => {
 };
 
 export const generatePasswordResetToken = async (userId: string) => {
-	// const storedUserTokens = await db
-	// 	.selectFrom('password_reset_token')
-	// 	.selectAll()
-	// 	.where('user_id', '=', userId)
-	// 	.execute();
 	const storedUserTokens = await prisma.verificationToken.findMany({
 		where: { user_id: userId }
 	});
@@ -92,6 +69,7 @@ export const generatePasswordResetToken = async (userId: string) => {
 			// and reuse the token if true
 			return isWithinExpiration(Number(token.expires) - EXPIRES_IN / 2);
 		});
+
 		if (reusableStoredToken) return reusableStoredToken.id;
 	}
 
@@ -115,7 +93,7 @@ export const validatePasswordResetToken = async (token: string) => {
 			where: { id: token }
 		});
 
-		if (!storedToken) throw new Error('Invalid token');
+		if (!storedToken) throw error(500, 'token is missing');
 
 		await prisma.verificationToken.delete({
 			where: { id: token }
@@ -129,7 +107,7 @@ export const validatePasswordResetToken = async (token: string) => {
 	const tokenExpires = Number(expires); // bigint => number conversion
 
 	if (!isWithinExpiration(tokenExpires)) {
-		throw new Error('Expired token');
+		throw error(500, 'Expired token');
 	}
 
 	return user_id;
@@ -148,5 +126,6 @@ export const isValidPasswordResetToken = async (token: string) => {
 	if (!isWithinExpiration(tokenExpires)) {
 		return false;
 	}
+
 	return true;
 };
