@@ -1,14 +1,14 @@
 import { auth } from '$lib/server/lucia';
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { Actions } from './$types';
 import type { UserSchema } from 'lucia';
 
 import { generatePasswordResetToken } from '$lib/server/token';
-import { isValidEmail, sendPasswordResetLink } from '$lib/server/email';
+import { sendPasswordResetLink } from '$lib/server/email';
 
 import { message, setError, superValidate } from 'sveltekit-superforms/server';
-import { redirect } from 'sveltekit-flash-message/server';
+// import { redirect } from 'sveltekit-flash-message/server';
 import { capitalizeFirstLetter } from '$lib/utils';
 import { Prisma } from '@prisma/client';
 // import { updateFlash } from 'sveltekit-flash-message/client';
@@ -50,12 +50,13 @@ export const actions: Actions = {
 
 			await sendPasswordResetLink(form.data.email, token);
 
-			throw redirect(
-				307,
-				'/auth/login',
-				{ type: 'success', message: 'Check your email for a reset link' },
-				event
-			);
+			// throw redirect(
+			// 	301,
+			// 	'/auth/login',
+			// 	{ type: 'success', message: 'Check your email for a reset link' },
+			// 	event
+			// );
+			throw redirect(301, '/auth/login');
 		} catch (e) {
 			console.log('e: ', e);
 			// check LuciaErrors

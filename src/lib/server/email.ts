@@ -19,7 +19,6 @@ export const sendEmailVerificationLink = async (email: string, token: string) =>
 	};
 
 	try {
-		// console.log('trans.sendMail(message);: ', message);
 		sendEmail(message);
 	} catch (error) {
 		console.log('sendEmailVerificationLink error: ', error);
