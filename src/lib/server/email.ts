@@ -2,12 +2,12 @@ import { createTransporter } from '$lib/emails/createTransporter';
 import { CALLBACK_HOST } from '$env/static/private';
 import { dev } from '$app/environment';
 
-const sendEmail = async (emailOptions) => {
+async function sendEmail(emailOptions) {
 	let emailTransporter: any = await createTransporter();
 	await emailTransporter.sendMail(emailOptions);
-};
+}
 
-export const sendEmailVerificationLink = async (email: string, token: string) => {
+export async function sendEmailVerificationLink(email: string, token: string) {
 	const url = `${CALLBACK_HOST}/auth/email-verification/${token} `;
 
 	const message = {
@@ -25,9 +25,9 @@ export const sendEmailVerificationLink = async (email: string, token: string) =>
 	}
 
 	if (dev) console.log(`Your email verification link: ${url}`);
-};
+}
 
-export const sendPasswordResetLink = async (email: string, token: string) => {
+export async function sendPasswordResetLink(email: string, token: string) {
 	const url = `${CALLBACK_HOST}/auth/password-reset/${token}`;
 
 	const message = {
@@ -54,7 +54,7 @@ export const sendPasswordResetLink = async (email: string, token: string) => {
 			message: error
 		};
 	}
-};
+}
 
 export const isValidEmail = (maybeEmail: unknown): maybeEmail is string => {
 	if (typeof maybeEmail !== 'string') return false;

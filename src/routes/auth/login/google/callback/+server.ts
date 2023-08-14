@@ -1,7 +1,6 @@
 import { auth, googleAuth } from '$lib/server/lucia.js';
 import { OAuthRequestError } from '@lucia-auth/oauth';
 import { Prisma } from '@prisma/client';
-import { setFlash } from 'sveltekit-flash-message/server';
 
 export const GET = async (event) => {
 	const { url, cookies, locals } = event;

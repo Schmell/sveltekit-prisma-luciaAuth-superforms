@@ -1,27 +1,13 @@
 import { auth } from '$lib/server/lucia';
 import { fail, redirect } from '@sveltejs/kit';
-// import { SqliteError } from 'better-sqlite3';
 import { generateEmailVerificationToken } from '$lib/server/token';
-import { isValidEmail, sendEmailVerificationLink } from '$lib/server/email';
-import { z } from 'zod';
+import { sendEmailVerificationLink } from '$lib/server/email';
 import type { PageServerLoad, Actions } from './$types';
 import { message, setError, superValidate } from 'sveltekit-superforms/server';
 import { LuciaError } from 'lucia';
 import { emailRegisterSchema } from './emailRegisterSchema';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { Prisma } from '@prisma/client';
 import { capitalizeFirstLetter } from '$lib/utils';
-
-// const emailRegisterSchema = z.object({
-// 	username: z.string().min(2).max(18),
-// 	// name: z.string().min(2).max(18).optional(),
-// 	firstname: z.string().max(16),
-// 	lastname: z.string().max(16),
-// 	avatar: z.string().url().optional(),
-// 	email: z.string().email(),
-// 	password: z.string().min(6).max(12),
-// 	confirm: z.string().min(6).max(12)
-// });
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const session = await locals.auth.validate();

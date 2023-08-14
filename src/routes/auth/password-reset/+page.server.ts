@@ -11,7 +11,6 @@ import { message, setError, superValidate } from 'sveltekit-superforms/server';
 import { redirect } from 'sveltekit-flash-message/server';
 import { capitalizeFirstLetter } from '$lib/utils';
 import { Prisma } from '@prisma/client';
-// import { updateFlash } from 'sveltekit-flash-message/client';
 
 const passwordResetSchema = z.object({
 	email: z.string().email()
@@ -48,11 +47,7 @@ export const actions: Actions = {
 
 			const token = await generatePasswordResetToken(user.userId);
 
-			try {
-				await sendPasswordResetLink(form.data.email, token);
-			} catch (e) {
-				console.log('sendPasswordResetLink error: ', e);
-			}
+			await sendPasswordResetLink(form.data.email, token);
 
 			throw redirect(
 				301,
