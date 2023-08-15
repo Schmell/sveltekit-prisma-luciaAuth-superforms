@@ -3,6 +3,7 @@ import { googleAuth } from '$lib/server/lucia';
 
 export const GET = async ({ cookies }) => {
 	const [url, state] = await googleAuth.getAuthorizationUrl();
+
 	// store state
 	cookies.set('google_oauth_state', state, {
 		httpOnly: true,
@@ -10,6 +11,7 @@ export const GET = async ({ cookies }) => {
 		path: '/',
 		maxAge: 60 * 60
 	});
+
 	return new Response(null, {
 		status: 302,
 		headers: {

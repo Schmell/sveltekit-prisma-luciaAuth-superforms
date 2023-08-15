@@ -11,7 +11,7 @@ export async function sendEmailVerificationLink(email: string, token: string) {
 	const url = `${CALLBACK_HOST}/auth/email-verification/${token} `;
 
 	const message = {
-		from: '',
+		from: 'sheldon.street@gmail.com',
 		to: email,
 		subject: 'Verify your password',
 		text: 'Svelte-way would like you to verify the password you just used',
@@ -49,6 +49,7 @@ export async function sendPasswordResetLink(email: string, token: string) {
 		};
 	} catch (error: any) {
 		console.log('error: ', error);
+
 		return {
 			success: false,
 			message: error

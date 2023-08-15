@@ -13,15 +13,17 @@ export const createTransporter = async () => {
 		);
 
 		oauth2Client.setCredentials({
-			refresh_token: process.env.REFRESH_TOKEN
+			refresh_token: REFRESH_TOKEN
 		});
 
 		const accessToken = await new Promise((resolve, reject) => {
 			oauth2Client.getAccessToken((err, token) => {
 				if (err) {
-					console.log('*ERR: ', err);
+					console.log('*ERR: ', err.response?.data);
+
 					reject();
 				}
+
 				resolve(token);
 			});
 		});
@@ -39,9 +41,10 @@ export const createTransporter = async () => {
 				refreshToken: REFRESH_TOKEN
 			}
 		});
+
 		return transporter;
 	} catch (err) {
-		console.log('err: ', err);
+		console.log('createTranspporter err: ', err);
 		return err;
 	}
 };
