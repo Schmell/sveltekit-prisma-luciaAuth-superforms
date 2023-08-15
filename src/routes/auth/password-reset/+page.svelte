@@ -2,33 +2,34 @@
 	import Button from '$components/form/Button.svelte';
 	import { Form, Input } from '$components/superForm/index.js';
 	import { superForm } from 'sveltekit-superforms/client';
-	import * as flashModule from 'sveltekit-flash-message/client';
-	import { getFlash } from 'sveltekit-flash-message/client';
-	import { page } from '$app/stores';
+	// import * as flashModule from 'sveltekit-flash-message/client';
+	// import { getFlash } from 'sveltekit-flash-message/client';
+	// import { page } from '$app/stores';
 
 	export let data;
 
-	const flash = getFlash(page);
+	// const flash = getFlash(page);
+	const formObj = superForm(data.form);
 
-	const formObj = superForm(data.form, {
-		autoFocusOnError: true,
+	// const formObj = superForm(data.form, {
+	// 	autoFocusOnError: true,
 
-		onResult: ({ result }) => {
-			if (result.type === 'success') {
-				console.log('result: ', result);
-			}
-		},
+	// 	onResult: ({ result }) => {
+	// 		if (result.type === 'success') {
+	// 			console.log('result: ', result);
+	// 		}
+	// 	},
 
-		flashMessage: {
-			module: flashModule,
-			onError: ({ result, message }) => {
-				const errorMessage = result.error.message;
-				message.set({ type: 'error', message: errorMessage });
-			}
-		},
+	// 	flashMessage: {
+	// 		module: flashModule,
+	// 		onError: ({ result, message }) => {
+	// 			const errorMessage = result.error.message;
+	// 			message.set({ type: 'error', message: errorMessage });
+	// 		}
+	// 	},
 
-		syncFlashMessage: true
-	});
+	// 	syncFlashMessage: true
+	// });
 </script>
 
 <svelte:head>

@@ -1,5 +1,5 @@
 import { auth } from '$lib/server/lucia';
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { Actions } from './$types';
 import type { UserSchema } from 'lucia';
@@ -8,9 +8,10 @@ import { generatePasswordResetToken } from '$lib/server/token';
 import { sendPasswordResetLink } from '$lib/server/email';
 
 import { message, setError, superValidate } from 'sveltekit-superforms/server';
-import { redirect } from 'sveltekit-flash-message/server';
+// import { redirect } from 'sveltekit-flash-message/server';
 import { capitalizeFirstLetter } from '$lib/utils';
 import { Prisma } from '@prisma/client';
+import { prisma as pClient } from '$lib/server/prisma';
 
 const passwordResetSchema = z.object({
 	email: z.string().email()
@@ -31,7 +32,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			const storedUser = await prisma.user.findFirst({
+			const storedUser = await pClient.user.findFirst({
 				where: { email: form.data.email }
 			});
 
@@ -49,12 +50,13 @@ export const actions: Actions = {
 
 			await sendPasswordResetLink(form.data.email, token);
 
-			throw redirect(
-				301,
-				'/auth/login',
-				{ type: 'success', message: 'Check your email for a reset link' },
-				event
-			);
+			// throw redirect(
+			// 	301,
+			// 	'/auth/login',
+			// 	{ type: 'success', message: 'Check your email for a reset link' },
+			// 	event
+			// );
+			return message(form, 'Email was sent');
 			// throw redirect(301, '/auth/login');
 		} catch (e) {
 			console.log('password-reset error: ', e);

@@ -1,6 +1,7 @@
 import { auth, googleAuth } from '$lib/server/lucia.js';
 import { OAuthRequestError } from '@lucia-auth/oauth';
 import { Prisma } from '@prisma/client';
+import { prisma } from '$lib/server/prisma';
 
 export const GET = async (event) => {
 	const { url, cookies, locals } = event;

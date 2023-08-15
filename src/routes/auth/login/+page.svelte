@@ -44,7 +44,7 @@
 			<a class="btn btn-ghost" href="/auth/login/google">
 				<Icon icon="devicon:google" /> Sign in with Google
 			</a>
-			<a class="btn btn-ghost" href="/auth/login/facebook">
+			<a class="btn btn-ghos btn-disabled" href="/auth/login/facebook">
 				<Icon icon="devicon:facebook" /> Sign in with facebook
 			</a>
 		</div>
